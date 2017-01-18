@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.webkit.URLUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,17 +54,21 @@ public class GalleryActivity
         // Create a new intent for starting this activity
         // using the passed context along with the class identifier
         // for this class.
-        // TODO - you fill in here.
+
+        //start a new intent (context, class identifier)
+        Intent intent = new Intent(context, GalleryActivity.class);
 		
 
         // Put the received list of input URLs as an intent
         // use putParcelableArrayListExtra(String, ArrayList<Uri>) on the intent
         // using the predefined INTENT_EXTRA_URLS extra name.
-        // TODO - you fill in here.
+
+        //also insert ArrayList
+        intent.putParcelableArrayListExtra(INTENT_EXTRA_URLS, inputUrls);
 		
 
         // Return the intent.
-        // TODO - you fill in here.
+        return intent;
 		
     }
 
@@ -89,7 +94,9 @@ public class GalleryActivity
             // Call local help method to extract the URLs from the activity's
             // starting intent and pass these URLs into the super class using
             // the setItems() helper method.
-            // TODO - you fill in here.
+            List<Uri> list = extractInputUrlsFromIntent(this.getIntent());
+            //pass url into super class
+            super.setItems(list);
 			
         } else {
             // The activity is being recreated after configuration change.
@@ -114,7 +121,12 @@ public class GalleryActivity
         // Next, validate the extracted list URL strings by calling the local
         // validateInput() helper method. If the entire list of received URLs
         // are valid, then return this list. Otherwise return null.
-        // TODO - you fill in here.
+        List<Uri> list = intent.getParcelableArrayListExtra(INTENT_EXTRA_URLS);
+        if (validateInput((ArrayList<Uri>) list)) {
+            return list;
+        }else{
+            return null;
+        }
 		
     }
 
@@ -141,11 +153,20 @@ public class GalleryActivity
         //
         // Return true if all the URLs are valid.
 
-        // TODO - you fill in here.
+        if(inputUrls == null){
+            ViewUtils.showToast(getApplicationContext(), R.string.input_url_list_is_null, inputUrls);
+        }else if (inputUrls.size() == 0){
+            ViewUtils.showToast(getApplicationContext(), R.string.input_url_list_is_empty, inputUrls);
+        }
+        for (Uri i : inputUrls){
+            if (!URLUtil.isValidUrl(i.toString())){
+                return false;
+            }
+        }
 		
 
         // Input passed all tests, so return true.
-        // TODO - you fill in here.
+        return true;
 		
     }
 
